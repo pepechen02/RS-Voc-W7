@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RS-W7-Vocabulary · 閃卡與小測驗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF6DC;
+    --paper: #FFFFFF;
+    --ink: #1F2A44;
+    --ink-soft: #5E6A87;
+    --line: #1F2A44;
+    --rule: #D9D2BC;
+    --accent: #FFC83D;
+    --on-accent: #1F2A44;
+    --good: #14A06B;
+    --bad: #E5484D;
+    --good-bg: #DDF5EA;
+    --bad-bg: #FDE4E4;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141A2E; --paper: #212A47; --ink: #F2F4FF; --ink-soft: #A9B3D6;
+      --line: #C7D0F2; --rule: #3A4570; --good: #3DD598; --bad: #FF7A7F;
+      --good-bg: #17382F; --bad-bg: #44232B;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141A2E; --paper: #212A47; --ink: #F2F4FF; --ink-soft: #A9B3D6;
+    --line: #C7D0F2; --rule: #3A4570; --good: #3DD598; --bad: #FF7A7F;
+    --good-bg: #17382F; --bad-bg: #44232B;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height: 100%; margin: 0; }
+  body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Nunito', sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 16px 40px;
+  }
+  .stage { width: 100%; max-width: 560px; }
+
+  .ic { width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .ic.fill { fill: currentColor; }
+
+  /* Header */
+  .header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .mascot { width: 46px; height: 46px; flex: none; }
+  .app-title { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(22px, 5.5vw, 28px); line-height: 1.1; }
+  .app-sub { color: var(--ink-soft); font-weight: 700; font-size: 13px; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 16px;
+    color: var(--ink); background: var(--paper);
+    border: 2.5px solid var(--line); border-radius: 16px; padding: 12px 16px;
+    box-shadow: 0 4px 0 var(--line); cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--line); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.primary { background: var(--accent); color: var(--on-accent); }
+  .btn.good { background: var(--good-bg); color: var(--good); }
+
+  /* Tabs */
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .tab { font-size: 17px; padding: 12px 10px; }
+  .tab.active { background: var(--accent); color: var(--on-accent); }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Progress */
+  .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .bar { flex: 1; height: 18px; border: 2.5px solid var(--line); border-radius: 999px; background: var(--paper); overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); border-right: 2.5px solid var(--line); transition: width .4s ease; width: 0; }
+  .progress-label { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 16px; min-width: 56px; text-align: right; }
+  .chip-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--paper);
+    border: 2.5px solid var(--line); border-radius: 999px; padding: 5px 14px;
+    font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 14px;
+  }
+  .chip .ic { color: var(--good); }
+
+  /* Flashcard */
+  .card-wrap { perspective: 1600px; width: 100%; height: clamp(470px, 68vh, 620px); margin-bottom: 22px; }
+  .card { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.5,.1,.2,1.1); cursor: pointer; }
+  .card.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0; border: 3px solid var(--line); border-radius: 28px;
+    box-shadow: 0 8px 0 var(--line); backface-visibility: hidden; overflow: hidden;
+    display: flex; flex-direction: column; padding: 22px;
+  }
+  .front { background: var(--accent); color: var(--on-accent); align-items: center; justify-content: center; text-align: center; }
+  .front::before { content: ''; position: absolute; right: -50px; top: -50px; width: 170px; height: 170px; border-radius: 50%; background: rgba(255,255,255,.4); }
+  .front::after { content: ''; position: absolute; left: -36px; bottom: -36px; width: 120px; height: 120px; border-radius: 50%; border: 3px dashed rgba(31,42,68,.35); }
+  .back { background: var(--paper); color: var(--ink); transform: rotateY(180deg); }
+  .face > * { position: relative; z-index: 1; }
+
+  .tag-row { position: absolute !important; top: 16px; left: 18px; right: 18px; display: flex; justify-content: space-between; align-items: center; }
+  .count-chip { background: var(--paper); color: var(--ink); border: 2.5px solid var(--line); border-radius: 999px; padding: 3px 12px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 13px; }
+  .star-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--good); color: #fff; border: 2.5px solid var(--line); display: none; align-items: center; justify-content: center; }
+  .star-badge.on { display: flex; }
+
+  .front-word { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(36px, 10vw, 54px); line-height: 1.1; word-break: break-word; margin-bottom: 12px; }
+  .pos-pill { display: inline-block; background: var(--paper); color: #1F2A44; border: 2.5px solid #1F2A44; border-radius: 999px; padding: 3px 14px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 14px; }
+  .speak-big { margin-top: 26px; background: #fff; color: #1F2A44; border-color: #1F2A44; box-shadow: 0 4px 0 #1F2A44; font-size: 17px; padding: 13px 22px; }
+  .hint { margin-top: 22px; display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 14px; color: rgba(31,42,68,.75); }
+  .speaking { animation: pulse .9s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+  .back-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 34px; margin-bottom: 10px; }
+  .back-word { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 28px; line-height: 1.1; }
+  .back-head .pos-pill { background: var(--accent); margin-top: 6px; }
+  .speak-small { padding: 9px 14px; font-size: 15px; }
+  .back-body { flex: 1; overflow-y: auto; padding-right: 2px; }
+  .sec { padding: 12px 0; border-top: 2.5px dashed var(--rule); }
+  .sec:first-child { border-top: none; padding-top: 4px; }
+  .sec-label { display: inline-flex; align-items: center; gap: 6px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 12.5px; letter-spacing: .06em; color: var(--ink-soft); margin-bottom: 6px; }
+  .read { font-size: clamp(17px, 4.6vw, 20px); line-height: 1.6; font-weight: 600; color: var(--ink); font-style: normal; }
+  .read .hl { font-weight: 800; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; }
+  .zh-meaning { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 24px; background: linear-gradient(transparent 58%, var(--accent) 58%); padding: 0 4px; }
+  .zh-example { font-size: 16px; font-weight: 700; color: var(--ink-soft); line-height: 1.55; margin-top: 4px; }
+
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .controls .btn { padding: 14px 10px; font-size: 17px; }
+  .foot { text-align: center; color: var(--ink-soft); font-size: 12.5px; font-weight: 700; margin-top: 8px; }
+
+  /* Quiz */
+  .score-pill .ic { color: #C98F00; }
+  .quiz-card { background: var(--paper); border: 3px solid var(--line); border-radius: 28px; box-shadow: 0 8px 0 var(--line); padding: 22px; margin-bottom: 22px; min-height: 320px; display: flex; flex-direction: column; }
+  .type-badge { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--on-accent); border: 2.5px solid var(--line); border-radius: 999px; padding: 5px 14px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 14px; margin-bottom: 12px; }
+  .q-meta { font-weight: 800; font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; }
+  .q-text { font-size: clamp(19px, 5vw, 22px); line-height: 1.6; font-weight: 700; margin-bottom: 16px; }
+  .q-text .blank { display: inline-block; min-width: 90px; border-bottom: 3.5px solid var(--ink); text-align: center; color: transparent; user-select: none; }
+  .listen-row { display: flex; justify-content: center; margin: 4px 0 18px; }
+  .input-row { display: flex; gap: 10px; margin-top: auto; }
+  .q-input { flex: 1; min-width: 0; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 18px; color: var(--ink); background: var(--bg); border: 2.5px solid var(--line); border-radius: 14px; padding: 12px 14px; outline: none; }
+  .q-input:focus { box-shadow: 0 0 0 3px var(--accent); }
+  .q-input.correct { background: var(--good-bg); border-color: var(--good); }
+  .q-input.wrong { background: var(--bad-bg); border-color: var(--bad); }
+  .feedback { display: none; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 14px; border-radius: 14px; font-weight: 800; font-size: 16px; }
+  .feedback.show { display: flex; }
+  .feedback.correct { background: var(--good-bg); color: var(--good); }
+  .feedback.wrong { background: var(--bad-bg); color: var(--bad); }
+
+  .summary { background: var(--paper); border: 3px solid var(--line); border-radius: 28px; box-shadow: 0 8px 0 var(--line); padding: 34px 22px; text-align: center; margin-bottom: 22px; }
+  .trophy { width: 84px; height: 84px; border-radius: 50%; background: var(--accent); color: var(--on-accent); border: 3px solid var(--line); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .trophy .ic { width: 46px; height: 46px; }
+  .final-score { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 38px; }
+  .final-sub { color: var(--ink-soft); font-weight: 800; font-size: 15px; margin: 4px 0 22px; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--bg); font-weight: 800; font-size: 14px; padding: 10px 20px; border-radius: 999px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 50; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .bar-fill, .btn { transition: none !important; }
+    .speaking { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12.5 19V5L7.5 9.5H4z"/><path d="M16 8.8a4.6 4.6 0 010 6.4"/><path d="M18.8 6a8.6 8.6 0 010 12"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M20 12H5"/><path d="M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="M18 2l4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="M18 14l4 4-4 4"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="3" y="7" width="14" height="14" rx="2.5"/><path d="M7 7V5.5A2.5 2.5 0 019.5 3h9A2.5 2.5 0 0121 5.5v9a2.5 2.5 0 01-2.5 2.5H17"/></symbol>
+  <symbol id="i-quiz" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4V3h6v1"/><path d="M9 13l2.2 2.2L15.5 11"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 013 3L8 19l-4 1z"/><path d="M14.5 6.5l3 3"/></symbol>
+  <symbol id="i-phones" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.8"/><rect x="17" y="14" width="4" height="6" rx="1.8"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 016.5 3H19v15H6.5A2.5 2.5 0 004 20.5v-15z"/><path d="M4 20.5A2.5 2.5 0 016.5 18H19v3H6.5A2.5 2.5 0 014 20.5z"/></symbol>
+  <symbol id="i-flip" viewBox="0 0 24 24"><path d="M20 11a8 8 0 00-14.5-4.5L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0014.5 4.5L20 16"/><path d="M20 21v-5h-5"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M7 6H4v1a3 3 0 003 3"/><path d="M17 6h3v1a3 3 0 01-3 3"/></symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24"><path d="M20 11a8 8 0 10-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
+</svg>
+
+<div class="stage">
+  <div class="header">
+    <svg class="mascot" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="20" fill="var(--accent)" stroke="var(--line)" stroke-width="3"/>
+      <circle cx="17" cy="21" r="2.6" fill="#1F2A44"/><circle cx="31" cy="21" r="2.6" fill="#1F2A44"/>
+      <path d="M16 29q8 8 16 0" fill="none" stroke="#1F2A44" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="11.5" cy="28" r="3" fill="#FF8A80" opacity=".6"/><circle cx="36.5" cy="28" r="3" fill="#FF8A80" opacity=".6"/>
+    </svg>
+    <div>
+      <div class="app-title">RS-W7-Vocabulary</div>
+      <div class="app-sub">單字閃卡與小測驗</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="btn tab active" id="tabFlash" type="button"><svg class="ic"><use href="#i-cards"/></svg>閃卡</button>
+    <button class="btn tab" id="tabQuiz" type="button"><svg class="ic"><use href="#i-quiz"/></svg>小測驗</button>
+  </div>
+
+  <!-- FLASHCARDS -->
+  <div class="view active" id="viewFlash">
+    <div class="progress-row">
+      <div class="bar"><div class="bar-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">1 / 10</div>
+    </div>
+    <div class="chip-row">
+      <div class="chip"><svg class="ic fill"><use href="#i-star"/></svg>已掌握 <span id="masteredCount">0</span> / <span id="totalCount">10</span></div>
+    </div>
+
+    <div class="card-wrap">
+      <div class="card" id="card">
+        <div class="face front">
+          <div class="tag-row">
+            <div class="count-chip" id="countFront"></div>
+            <div class="star-badge" id="starFront"><svg class="ic fill"><use href="#i-star"/></svg></div>
+          </div>
+          <div class="front-word" id="frontWord"></div>
+          <div class="pos-pill" id="frontPos"></div>
+          <button class="btn speak-big" id="speakFrontBtn" type="button"><svg class="ic"><use href="#i-speaker"/></svg>播放發音</button>
+          <div class="hint"><svg class="ic"><use href="#i-flip"/></svg>點一下卡片翻面</div>
+        </div>
+        <div class="face back">
+          <div class="tag-row">
+            <div class="count-chip" id="countBack"></div>
+            <div class="star-badge" id="starBack"><svg class="ic fill"><use href="#i-star"/></svg></div>
+          </div>
+          <div class="back-head">
+            <div>
+              <div class="back-word" id="backWord"></div>
+              <div class="pos-pill" id="backPos"></div>
+            </div>
+            <button class="btn speak-small" id="speakBackBtn" type="button"><svg class="ic"><use href="#i-speaker"/></svg>播放發音</button>
+          </div>
+          <div class="back-body">
+            <div class="sec">
+              <div class="sec-label"><svg class="ic"><use href="#i-book"/></svg>DEFINITION</div>
+              <div class="read" id="backDef"></div>
+            </div>
+            <div class="sec">
+              <div class="sec-label">中文意思</div>
+              <div><span class="zh-meaning" id="backZh"></span></div>
+            </div>
+            <div class="sec">
+              <div class="sec-label"><svg class="ic"><use href="#i-pencil"/></svg>EXAMPLE</div>
+              <div class="read" id="backExample"></div>
+              <div class="zh-example" id="backExampleZh"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prevBtn" type="button"><svg class="ic"><use href="#i-left"/></svg>上一張</button>
+      <button class="btn primary" id="nextBtn" type="button">下一張<svg class="ic"><use href="#i-right"/></svg></button>
+      <button class="btn" id="masteredBtn" type="button"><svg class="ic"><use href="#i-star"/></svg><span id="masteredText">標記已掌握</span></button>
+      <button class="btn" id="shuffleBtn" type="button"><svg class="ic"><use href="#i-shuffle"/></svg>隨機打亂</button>
+    </div>
+    <div class="foot">進度不會儲存，重新整理會重置</div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="view" id="viewQuiz">
+    <div class="progress-row">
+      <div class="bar"><div class="bar-fill" id="quizFill"></div></div>
+      <div class="progress-label" id="quizLabel">1 / 30</div>
+    </div>
+    <div class="chip-row">
+      <div class="chip score-pill"><svg class="ic fill"><use href="#i-star"/></svg>答對 <span id="quizScore">0</span> 題</div>
+      <button class="btn" id="quizShuffleBtn" type="button" style="padding:6px 14px;font-size:14px;border-radius:999px"><svg class="ic"><use href="#i-shuffle"/></svg>重新洗牌</button>
+    </div>
+
+    <div id="quizWrap">
+      <div class="quiz-card">
+        <div class="type-badge" id="typeBadge"></div>
+        <div class="q-meta" id="qMeta"></div>
+        <div class="q-text" id="qText"></div>
+        <div class="listen-row" id="listenRow" style="display:none">
+          <button class="btn primary" id="quizSpeakBtn" type="button"><svg class="ic"><use href="#i-speaker"/></svg>播放發音</button>
+        </div>
+        <div class="input-row">
+          <input class="q-input" id="qInput" type="text" placeholder="請輸入答案…" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="btn primary" id="submitBtn" type="button"><svg class="ic"><use href="#i-check"/></svg>送出</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="qPrevBtn" type="button"><svg class="ic"><use href="#i-left"/></svg>上一題</button>
+        <button class="btn primary" id="qNextBtn" type="button"><span id="qNextText">下一題</span><svg class="ic"><use href="#i-right"/></svg></button>
+      </div>
+    </div>
+
+    <div class="summary" id="summary" style="display:none">
+      <div class="trophy"><svg class="ic"><use href="#i-trophy"/></svg></div>
+      <div class="final-score"><span id="finalScore">0</span> / 30</div>
+      <div class="final-sub" id="finalSub"></div>
+      <button class="btn primary" id="restartBtn" type="button"><svg class="ic"><use href="#i-restart"/></svg>再測一次</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  const words = [
+    { word: "eloped", pos: "v.", def: "To run away with somebody in order to marry them secretly.", zh: "私奔", example: "The teenage couple eloped to the U.S.A.", exampleZh: "這對十幾歲的情侶私奔到了美國。", exampleBlank: "eloped" },
+    { word: "feisty", pos: "adj.", def: "Brave and determined and not afraid of arguing or defending yourself.", zh: "潑辣的；不服輸的", example: "Viewers of the T.V. show love her for her feisty and outspoken character.", exampleZh: "電視節目的觀眾喜愛她，因為她潑辣又直言不諱的個性。", exampleBlank: "feisty" },
+    { word: "decompose", pos: "v.", def: "To be destroyed gradually after death by natural processes.", zh: "腐爛；分解", example: "After we die, our bodies will decompose.", exampleZh: "我們死後，身體會腐爛分解。", exampleBlank: "decompose" },
+    { word: "amplify", pos: "v.", def: "To amplify something you increase something in strength, especially sound.", zh: "放大；增強", example: "You amplify your songs by using a speaker.", exampleZh: "你可以用喇叭來放大你的歌聲。", exampleBlank: "amplify" },
+    { word: "soprano", pos: "n.", def: "A singing voice with the highest range for a woman or boy.", zh: "女高音", example: "The soprano impressed everyone with her voice.", exampleZh: "這位女高音的歌聲讓每個人都印象深刻。", exampleBlank: "soprano" },
+    { word: "knowingly", pos: "adv.", def: "To do something on purpose.", zh: "故意地；有意地", example: "The naughty student knowingly angered the teacher with his remarks.", exampleZh: "那個頑皮的學生故意用言語惹惱老師。", exampleBlank: "knowingly" },
+    { word: "recycling", pos: "n.", def: "The process of treating things that have already been used so that they can be used again.", zh: "回收；資源回收", example: "We do recycling after 8th period daily in our school.", exampleZh: "我們學校每天第八節課後進行資源回收。", exampleBlank: "recycling" },
+    { word: "geode", pos: "n.", def: "A small hole in rock that has crystals around the inside; a rock containing a geode.", zh: "晶洞；晶球", example: "Some people like to collect rocks with geodes.", exampleZh: "有些人喜歡收集帶有晶洞的石頭。", exampleBlank: "geodes" },
+    { word: "recline", pos: "v.", def: "To sit or lie in a relaxed way, with your body leaning backwards.", zh: "斜躺；向後靠", example: "Dad likes to recline on the sofa and watch T.V.", exampleZh: "爸爸喜歡斜靠在沙發上看電視。", exampleBlank: "recline" },
+    { word: "lotion", pos: "n.", def: "A liquid used for cleaning, protecting or treating the skin.", zh: "乳液", example: "When we go to the beach, don\u2019t forget to cover yourself with suntan lotion or you will burn.", exampleZh: "我們去海灘時，別忘了擦防曬乳，否則會曬傷。", exampleBlank: "lotion" }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  const icon = (name, cls) => '<svg class="ic' + (cls ? ' ' + cls : '') + '"><use href="#i-' + name + '"/></svg>';
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function tokenRe(token) { return new RegExp('\\b' + escapeRegExp(token) + '\\b', 'i'); }
+  function blankOutToken(sentence, token) { return sentence.replace(tokenRe(token), '______'); }
+  function containsWord(text, word) { return tokenRe(word).test(text); }
+  function highlightExample(w) {
+    const m = w.example.match(tokenRe(w.exampleBlank));
+    if (!m) return esc(w.example);
+    return esc(w.example.slice(0, m.index)) + '<strong class="hl">' + esc(m[0]) + '</strong>' + esc(w.example.slice(m.index + m[0].length));
+  }
+  function shuffleFlat(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  const toast = $('toast');
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 1500);
+  }
+  function stopSpeech() { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); }
+  function speak(text, btn) {
+    if (!('speechSynthesis' in window)) { showToast('這個瀏覽器不支援語音朗讀'); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.92; u.pitch = 1.05;
+    if (btn) {
+      btn.classList.add('speaking');
+      u.onend = u.onerror = () => btn.classList.remove('speaking');
+    }
+    window.speechSynthesis.speak(u);
+  }
+
+  /* Tabs */
+  const tabFlash = $('tabFlash'), tabQuiz = $('tabQuiz'), viewFlash = $('viewFlash'), viewQuiz = $('viewQuiz');
+  function showView(flash) {
+    tabFlash.classList.toggle('active', flash); tabQuiz.classList.toggle('active', !flash);
+    viewFlash.classList.toggle('active', flash); viewQuiz.classList.toggle('active', !flash);
+    stopSpeech();
+  }
+  tabFlash.addEventListener('click', () => showView(true));
+  tabQuiz.addEventListener('click', () => showView(false));
+
+  /* Flashcards */
+  let order = words.map((_, i) => i), pos = 0, flipped = false;
+  const mastered = new Set();
+  const card = $('card'), prevBtn = $('prevBtn'), nextBtn = $('nextBtn'), masteredBtn = $('masteredBtn');
+  const speakFrontBtn = $('speakFrontBtn'), speakBackBtn = $('speakBackBtn');
+  $('totalCount').textContent = words.length;
+  const cur = () => words[order[pos]];
+  const speakFront = () => speak(cur().word, speakFrontBtn);
+  const speakBack = () => speak(cur().word + '. ' + cur().def, speakBackBtn);
+
+  function renderFlash(autoSpeak) {
+    const w = cur(), gi = order[pos], on = mastered.has(gi);
+    $('frontWord').textContent = w.word; $('frontPos').textContent = w.pos;
+    $('backWord').textContent = w.word; $('backPos').textContent = w.pos;
+    $('backDef').textContent = w.def;
+    $('backZh').textContent = w.zh;
+    $('backExample').innerHTML = highlightExample(w);
+    $('backExampleZh').textContent = w.exampleZh;
+    const label = (pos + 1) + ' / ' + words.length;
+    $('countFront').textContent = label; $('countBack').textContent = label;
+    $('starFront').classList.toggle('on', on); $('starBack').classList.toggle('on', on);
+    $('masteredText').textContent = on ? '已掌握' : '標記已掌握';
+    masteredBtn.classList.toggle('good', on);
+    $('progressFill').style.width = ((pos + 1) / words.length * 100) + '%';
+    $('progressLabel').textContent = label;
+    $('masteredCount').textContent = mastered.size;
+    prevBtn.disabled = pos === 0; nextBtn.disabled = pos === words.length - 1;
+    flipped = false; card.classList.remove('flipped');
+    if (autoSpeak) setTimeout(speakFront, 200);
+  }
+  function goTo(p, auto) {
+    if (p < 0 || p >= words.length) return;
+    stopSpeech(); pos = p; renderFlash(auto);
+  }
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.btn')) return;
+    flipped = !flipped; card.classList.toggle('flipped', flipped);
+    if (flipped) setTimeout(speakBack, 350);
+  });
+  speakFrontBtn.addEventListener('click', (e) => { e.stopPropagation(); speakFront(); });
+  speakBackBtn.addEventListener('click', (e) => { e.stopPropagation(); speakBack(); });
+  prevBtn.addEventListener('click', () => goTo(pos - 1, true));
+  nextBtn.addEventListener('click', () => goTo(pos + 1, true));
+  masteredBtn.addEventListener('click', () => {
+    const gi = order[pos];
+    if (mastered.has(gi)) mastered.delete(gi);
+    else { mastered.add(gi); showToast('太棒了！你掌握了 ' + cur().word); }
+    renderFlash(false);
+  });
+  $('shuffleBtn').addEventListener('click', () => {
+    shuffleFlat(order); pos = 0; showToast('已隨機打亂順序'); renderFlash(true);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (!viewFlash.classList.contains('active')) return;
+    if (e.key === 'ArrowRight') goTo(pos + 1, true);
+    else if (e.key === 'ArrowLeft') goTo(pos - 1, true);
+    else if (e.key === ' ') { e.preventDefault(); card.click(); }
+  });
+  renderFlash(false);
+
+  /* Quiz: 3 questions per word, all 30 shuffled individually */
+  function buildQuestions() {
+    const qs = [];
+    words.forEach((w, idx) => {
+      qs.push({ wordIdx: idx, type: 'listen', icon: 'phones', label: '聽力拼字', prompt: '聽發音，拼出這個單字', answer: w.word });
+      const defText = containsWord(w.def, w.word) ? blankOutToken(w.def, w.word) : w.def;
+      qs.push({ wordIdx: idx, type: 'def', icon: 'book', label: '看定義', prompt: defText, answer: w.word });
+      qs.push({ wordIdx: idx, type: 'example', icon: 'pencil', label: '例句填空', prompt: blankOutToken(w.example, w.exampleBlank), answer: w.exampleBlank, alt: w.word });
+    });
+    return qs;
+  }
+  let quiz = shuffleFlat(buildQuestions()), qPos = 0, score = 0, results = new Array(quiz.length).fill(null);
+  const qInput = $('qInput'), submitBtn = $('submitBtn'), feedback = $('feedback');
+
+  function setFeedback(ok, answer) {
+    qInput.disabled = true; submitBtn.disabled = true;
+    qInput.classList.add(ok ? 'correct' : 'wrong');
+    feedback.className = 'feedback show ' + (ok ? 'correct' : 'wrong');
+    feedback.innerHTML = ok ? icon('check') + '<span>答對了，太棒了！</span>' : icon('cross') + '<span>正確答案是：' + esc(answer) + '</span>';
+  }
+  function renderQuiz() {
+    $('quizWrap').style.display = ''; $('summary').style.display = 'none';
+    const q = quiz[qPos], w = words[q.wordIdx];
+    $('typeBadge').innerHTML = icon(q.icon) + q.label;
+    $('qMeta').textContent = '詞性：' + w.pos;
+    if (q.type === 'listen') {
+      $('qText').textContent = q.prompt; $('listenRow').style.display = 'flex';
+    } else {
+      $('qText').innerHTML = esc(q.prompt).replace('______', '<span class="blank">______</span>');
+      $('listenRow').style.display = 'none';
+    }
+    qInput.value = ''; qInput.className = 'q-input'; qInput.disabled = false; submitBtn.disabled = false;
+    feedback.className = 'feedback'; feedback.innerHTML = '';
+    $('quizFill').style.width = ((qPos + 1) / quiz.length * 100) + '%';
+    $('quizLabel').textContent = (qPos + 1) + ' / ' + quiz.length;
+    $('quizScore').textContent = score;
+    $('qPrevBtn').disabled = qPos === 0;
+    $('qNextText').textContent = qPos === quiz.length - 1 ? '完成測驗' : '下一題';
+    if (results[qPos] !== null) setFeedback(results[qPos], q.answer);
+    else if (q.type === 'listen' && viewQuiz.classList.contains('active')) setTimeout(() => speak(w.word, $('quizSpeakBtn')), 250);
+    if (results[qPos] === null) setTimeout(() => qInput.focus({ preventScroll: true }), 150);
+  }
+  function submit() {
+    if (qInput.disabled) return;
+    const q = quiz[qPos], v = qInput.value.trim().toLowerCase();
+    if (!v) { qInput.focus(); return; }
+    const ok = v === q.answer.toLowerCase() || (q.alt && v === q.alt.toLowerCase());
+    if (results[qPos] === null) { results[qPos] = ok; if (ok) score++; $('quizScore').textContent = score; }
+    setFeedback(ok, q.answer);
+  }
+  submitBtn.addEventListener('click', submit);
+  qInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+  $('quizSpeakBtn').addEventListener('click', () => speak(words[quiz[qPos].wordIdx].word, $('quizSpeakBtn')));
+  $('qPrevBtn').addEventListener('click', () => { if (qPos > 0) { stopSpeech(); qPos--; renderQuiz(); } });
+  $('qNextBtn').addEventListener('click', () => {
+    stopSpeech();
+    if (qPos === quiz.length - 1) finishQuiz(); else { qPos++; renderQuiz(); }
+  });
+  function finishQuiz() {
+    $('quizWrap').style.display = 'none'; $('summary').style.display = 'block';
+    $('finalScore').textContent = score;
+    const p = score / quiz.length;
+    $('finalSub').textContent = p === 1 ? '全對！你是單字小天才！' : p >= 0.7 ? '表現得很好，繼續保持！' : '再多練習幾次，你可以更棒！';
+  }
+  function resetQuiz() {
+    quiz = shuffleFlat(buildQuestions()); qPos = 0; score = 0; results = new Array(quiz.length).fill(null); renderQuiz();
+  }
+  $('quizShuffleBtn').addEventListener('click', () => { showToast('已將全部 30 題重新隨機排序'); resetQuiz(); });
+  $('restartBtn').addEventListener('click', resetQuiz);
+  document.addEventListener('keydown', (e) => {
+    if (!viewQuiz.classList.contains('active')) return;
+    if (e.key === 'Enter' && qInput.disabled && $('summary').style.display === 'none') $('qNextBtn').click();
+  });
+  renderQuiz();
+})();
+</script>
+</body>
+</html>
